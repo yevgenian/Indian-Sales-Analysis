@@ -24,4 +24,5 @@ sales['Month of Order Date'] = pd.to_datetime(sales['Month of Order Date'], form
 
 print(sales)
 
+
 sales.to_csv("Sales_target.csv", index = False)
