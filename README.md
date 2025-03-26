@@ -215,8 +215,6 @@ Sheets:
 - Top 10 States by Order Volume (Horizontal Bar Chart)
 
 - Top 10 Cities by Order Volume (Horizontal Bar Chart)
-Implemented ranking calculations using Calculated Fields.
-Used Dashboard Actions to enhance interactivity.
 
 ***Dashboard 3: Product Analysis***
 
