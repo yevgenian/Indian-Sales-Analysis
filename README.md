@@ -12,7 +12,7 @@
 
 **📂 Data Source:** https://www.kaggle.com/datasets/benroshan/ecommerce-data?select=Order+Details.csv
 
-**🚀 Final Vizualization:** https://public.tableau.com/app/profile/yevheniia.nechai/viz/IndianSalesAnalysis/Salesandprofitabilityanalysis?publish=yes](https://public.tableau.com/shared/7TWM5S34S?:display_count=n&:origin=viz_share_link
+**🚀 Final Vizualization:** https://public.tableau.com/views/SalesAnalysis_17430077341660/Salesandprofitabilityanalysis?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
 
 ## **2. Data Cleaning using Python**
 
