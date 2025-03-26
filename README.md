@@ -1,227 +1,245 @@
 # Indian-Sales-Analysis
-**ЧАСТИНА 1 ПІДГОТОВКА В Python**
+## **1. Project Description**
 
-Так як у cvs файлів є пусті рядки, через які я не можу коректно підв’язати дані до постгре, я використаю пайтон, щоб очистити їх. Через sql це важче, адже потрібно вчурну все робити, міняти формати і тд
+**📌 Title:** Indian Online Store Sales Analysis
 
-1. Використовую Visual Studio
+**🎯 Goal:**
+
+- Analyze revenue trends and profit to identify key performance drivers.;
+- Conduct a geographical analysis of top cities and regions to understand regional sales patterns;
+- Identify the most popular categories and subcategories;
+- Identify loss-making subcategories to optimize product offerings.
+
+**📂 Data Source:** https://www.kaggle.com/datasets/benroshan/ecommerce-data?select=Order+Details.csv
+
+**🚀 Final Vizualization:** https://public.tableau.com/app/profile/yevheniia.nechai/viz/IndianSalesAnalysis/Salesandprofitabilityanalysis?publish=yes](https://public.tableau.com/shared/7TWM5S34S?:display_count=n&:origin=viz_share_link
+
+## **2. Data Cleaning using Python**
+
+I am preparing the data before exporting it to PostgreSQL, as the CSV files contain empty rows and incorrect formats, which are easier to clean using Python. I used Python with Visual Studio.
 
 ```python
+# Import necessary libraries
 import numpy as np
 import pandas as pd
-```
 
-1. Підключаю файл
-
-```python
+# Read the List_of_Orders.csv file and set the first column as the index
 list_orders = pd.read_csv("C:\\Users\\admin\\Desktop\\Projects\\Second_pet-project\\List_of_Orders.csv", index_col = 0)
 
+# Display the first 5 rows of the dataset
 print(list_orders.head())
+
+# Display the entire dataset
 print(list_orders)
+
+# Check for any missing values in the dataset and print the sum of missing values for each column
 print(list_orders.isnull().sum())
-```
 
-1. Тобто є 60 пустих значень, які потрібно видалити. В цьому випадку це просто пусті ядки на всі стовбчики
-
-```python
+# Drop rows where all values are missing and store the cleaned dataset
 list_cleaned = list_orders.dropna(how="all")
+
+# Check again for missing values in the cleaned dataset
 print(list_cleaned.isnull().sum())
+
+# Display the cleaned dataset
 print(list_cleaned)
-```
 
-1. Зайве почистили, отримати 500 значень. Тепер можна зберегти готову таблицю
-
-```python
+# Save the cleaned dataset to a new CSV file
 list_cleaned.to_csv("List_orders_cleaned.csv")
-```
 
-1. Перевіряю наступіні дві таблиці. В них немає null значень.
-
-```python
-import numpy as np
-import pandas as pd
-
+# Read the Order_Details.csv file and set the first column as the index
 order_datails = pd.read_csv("C:\\Users\\admin\\Desktop\\Projects\\Second_pet-project\\Order_Details.csv", index_col = 0)
 
+# Display the Order_Details dataset
 print(order_datails)
+
+# Check for missing values in the Order_Details dataset. There are no missing values, so I just skip it.
 print(order_datails.isnull().sum())
-```
 
-1. Але у таблиці sales_target є колонка з датою, формат якої потрібно змінити на правильний.
-
-```python
-import numpy as np
-import pandas as pd
-
+# Read the Sales_target.csv file and set the first row as the header
 sales = pd.read_csv("C:\\Users\\admin\\Desktop\\Projects\\Second_pet-project\\Sales_target.csv", header = 0)
 
+# Convert the 'Month of Order Date' column to a datetime format
 sales['Month of Order Date'] = pd.to_datetime(sales['Month of Order Date'], format='%b-%y')
 
+# Display the Sales_target dataset after converting the date
 print(sales)
 
+# Save the Sales_target dataset without the index column
 sales.to_csv("Sales_target.csv", index = False)
 ```
 
-**ЧАСТИНА 2 ПІДКЛЮЧЕННЯ**
+## **3. Data Praparation using PostgreSQL**
 
-1. Скачала файли з кегля https://www.kaggle.com/datasets/benroshan/ecommerce-data?select=List+of+Orders.csv
-2. Створила нову базу даних в постгре
-3. Створюю 3 таблиці
+**3.1 Connection Data**
+
+I used PostgreSQL to preprocess and structure the datasets in a format that’s more convenient for analysis and visualization in Tableau.
 
 ```sql
+-- Create the table for storing order information
 CREATE TABLE list_of_orders (
-Order_ID TEXT PRIMARY KEY,
-Order_date DATE,
-Customer_name TEXT,
-State TEXT,
-City TEXT
+    Order_ID TEXT PRIMARY KEY,       -- Unique identifier for each order
+    Order_date DATE,                 -- Date when the order was placed
+    Customer_name TEXT,              -- Name of the customer
+    State TEXT,                      -- State where the order was placed
+    City TEXT                        -- City where the order was placed
 );
 
+-- Create the table for storing order details
 CREATE TABLE order_details (
-Order_ID TEXT,
-Amount NUMERIC,
-Profit NUMERIC,
-Quantity INT,
-Category TEXT,
-Sub_category TEXT
+    Order_ID TEXT,                   -- Order ID, used to link to the list_of_orders table
+    Amount NUMERIC,                  -- Amount of money for the order
+    Profit NUMERIC,                  -- Profit made from the order
+    Quantity INT,                    -- Quantity of items ordered
+    Category TEXT,                   -- Category of the ordered product
+    Sub_category TEXT                -- Sub-category of the ordered product
 );
 
+-- Create the table for storing sales targets
 CREATE TABLE sales_target (
-Date_of_order DATE,
-Category TEXT,
-Target NUMERIC
+    Date_of_order DATE,              -- Date when the target is set
+    Category TEXT,                   -- Category of the target sales
+    Target NUMERIC                   -- Sales target value for the specified category
 );
 ```
-
-1. Підключаю csv файли до таблиць
-
-![image.png](attachment:92f14c85-9825-4048-b388-5d0e19e05dae:d99bbc5f-04d8-466c-8ad3-72b2a6eecfb5.png)
-
-1. Переглядаю таблиці, так як там вцілому не багато даних, тому легко передивитись. Також, за допомогою ф-ї DISTINCT() переглядаю в категорія, містах, регіонах чи немає помилок і не коректних даних. Дані готові для подальшої роботи.
-
+Then I connected cvs files to the Database the menue options.
+After that, I reviewed the tables to check for errors or inconsistencies. The data is ready for further work.
 ```sql
+-- Select all columns and rows from the 'list_of_orders' table
 SELECT *
-FROM list_of_orders
-```
+FROM list_of_orders;
 
-```sql
+-- Select all columns and rows from the 'order_details' table
 SELECT *
-FROM order_details
-```
+FROM order_details;
 
-```sql
+-- Select all columns and rows from the 'sales_target' table
 SELECT *
-FROM sales_target
-```
+FROM sales_target;
 
-```sql
+-- Select distinct sub-categories from the 'order_details' table
+-- This will return unique sub-categories without duplicates
+-- The result will be ordered by the sub_category column
 SELECT DISTINCT(order_details.sub_category)
 FROM order_details
-ORDER BY sub_category
+ORDER BY sub_category;
 ```
 
-**ЧАСТИНА 3 СТВОРЕННЯ ОДНІЄЇ ТАБЛИЦІ**
+**3.2 Praparation Data**
 
-1. Таблиця sales_target зараз особливо не цікавить, так як у ній зведені результати по категоріям і місяцям. Тому поки працюватиму лише з таблицею list_of_orders та orders_details. Хочу зробити одну загальну таблицю, щоб потім було зручно працювати в табло.
+Create a new table that combines relevant columns into one table for easier analysis in Tableau.
 
 ```sql
-CREATE TABLE orders AS
-SELECT lo.*, od.amount, od.profit, od.quantity, od.category, od.sub_category
-FROM list_of_orders AS lo
-JOIN order_details AS od
-ON lo.order_id = od.order_id
+-- Creating table 'orders' by (inner) joining 'list_of_orders' and 'order_details'  
+CREATE TABLE orders AS  
+SELECT lo.*, od.amount, od.profit, od.quantity, od.category, od.sub_category  
+FROM list_of_orders AS lo  
+JOIN order_details AS od  
+ON lo.order_id = od.order_id;  
 ```
-
-Отримала таблицю з 1500 рядками. 
-
-1. Змінюю назву колонки amount на price
+The resulting table contains 1500 rows.
 
 ```sql
-ALTER TABLE orders
-RENAME COLUMN amount TO price
+-- Renaming the 'amount' column to 'price' for better clarity  
+ALTER TABLE orders  
+RENAME COLUMN amount TO price;  
+
+-- Adding new columns for cost and revenue calculations per sub-category  
+ALTER TABLE orders  
+ADD COLUMN subcat_cost NUMERIC,  
+ADD COLUMN subcat_revenue NUMERIC,  
+ADD COLUMN cost_per_unit NUMERIC;
+
+-- Calculating cost per unit for each sub-category  
+UPDATE orders  
+SET cost_per_unit = price - (profit / quantity);  
+
+-- Rounding cost per unit to 2 decimal places for better readability  
+UPDATE orders  
+SET cost_per_unit = ROUND(cost_per_unit, 2);  
+
+-- Calculating total cost per sub-category  
+UPDATE orders  
+SET subcat_cost = cost_per_unit * quantity;  
+
+-- Calculating total revenue per sub-category  
+UPDATE orders  
+SET subcat_revenue = price * quantity;  
 ```
 
-1. Так, як у таблиці є лише стовбчик профіту( тобто чистого прибутку), вирішила додати стовбці собівартості та доходу на кожну підкатегорію товаів.
+After starting work in Tableau, I noticed an error in one of the locations. So, I returned to PostgreSQL and corrected it.
 
 ```sql
-ALTER TABLE orders
-ADD COLUMN subcat_cost NUMERIC,
-ADD COLUMN subcat_revenue NUMERIC,
-ADD COLUMN cost_per_unit NUMERIC
+-- Correcting the state name for Hyderabad from an incorrect value to 'Telangana'  
+UPDATE orders  
+SET state = 'Telangana'  
+WHERE city = 'Hyderabad';  
 ```
+Data is properly structured and cleaned before further analysis in Tableau. 
 
-Для зручності створила стобчик собівартості на одиницю підкатегорії.
+## **4. Analysis and Visualization in Tableau**
 
-```sql
-UPDATE orders
-SET cost_per_unit = price - (profit/quantity)
+After preparing the data, I connected orders and sales_target tables to Tableau Public via Text File format.
 
-UPDATE orders
-SET cost_per_unit = ROUND(cost_per_unit,2)
-```
+***Dashboard 1: Executive Summary***
 
-Розраховую повну собівартість підкатегорії
+This dashboard provides key business metrics and financial insights.
 
-```sql
-UPDATE orders
-SET subcat_cost = cost_per_unit * quantity
-```
+![image](https://github.com/user-attachments/assets/b6b7b279-4f51-4f38-9d82-a56531e5bcc4)
 
-Прибуток з підкатегорії
+Sheets:
+- Key Performance Indicators (KPIs):
+  - Total Revenue: SUM([subcat_revenue])
+  - Total Profit: SUM([profit])
+  - Return on Sales (ROS %): SUM([profit]) / SUM([subcat_revenue]) (formatted as a percentage)
+  - Average Order Value: SUM([subcat_revenue]) / COUNTD([order_id])
+  - Total Number of Orders: COUNTD([order_id])
+  - Unique Customers: COUNTD([customer_name])
+- Revenue Trend by Month (Line Chart):
 
-```sql
-UPDATE orders
-SET subcat_revenue = price*quantity
-```
+- Profit Trend by Month (Bar Chart):
+- Sales Map by State (Profit Heatmap):
 
-1. Змінюю штат для міста Hyderabad на правильний
+***Dashboard 2: Geographic Sales Analysis***
 
-```sql
-UPDATE orders
-SET state = 'Telangana'
-WHERE city = 'Hyderabad'
-```
+This dashboard focuses on sales distribution across different states and cities.
 
-1. Всі інші розрахунки робитиму безпосередньо в Tableau.
+There I implemented ranking calculations using Calculated Fields and Parameter.
+Used Dashboard Actions to enhance interactivity.
 
-**ЧАСТИНА 4 АНАЛІЗ В TABLEAU**
+![image](https://github.com/user-attachments/assets/d245b1cb-f8bf-46db-9a69-fadc6dc0da5e)
 
-Підключаю файли orders та sales_target до Tableau Public через Text File.
+Sheets:
+- Sales Map by State (Profit Heatmap)
 
-***ЛИСТИ ДЛЯ ПЕРШОГО ДАШБОРДУ (Executive Summary)***
+- Top 10 States by Order Volume (Horizontal Bar Chart)
 
-1. **Лист 1 ( КРІ indicators)**
-- *Загальний дохід* (Total revenue) Тут розраховую через sum([subcat_revenue]) - автоматично;
-- *Загальний прибуток* (Total profit) Аналогічно доходу;
-- *Рентабельність (%) ROS* (Роблю через Calculated Field: `SUM([profit])/SUM([subcat_revenue])` і формат змінюю через налаштування);
-- *Середній чек* (Роблю через Calculated Field: Total revenue/Number of orders);
+- Top 10 Cities by Order Volume (Horizontal Bar Chart)
+Implemented ranking calculations using Calculated Fields.
+Used Dashboard Actions to enhance interactivity.
 
-*Number of orders теж розраховую через Calculated Field: `COUNTD([order_id]))`;
+***Dashboard 3: Product Analysis***
 
-- *Кількість унікальних замовників* (Calculated Field: `COUNTD([customer_name]))`;
-1. **Лист 2 (Revenue Trend by Month (лінійний графік))** 
+This dashboard analyzes sales and profitability at the category and sub-category levels.
 
-*Спочатку хотіла зробити revenue та profit  на одному графіку (з подвійною віссю), але виглядає не дуже, спотворюються результати, адже профіт набагато менший за revenue.
+![image](https://github.com/user-attachments/assets/35f23efd-3912-45e3-868d-695c48312904)
 
-1. **Лист 3 (Revenue & Profit Trend by Month (bar char))**
-2. **Лист 4 (Sales Map by State (теплова карта прибутку))**
+Sheets:
+- Category Share in Total Profit (Pie Chart)
 
-*Тут помітила, що у вихідних даних місто Hyderabad відноситься не до того штату, тому повертаюсь в постгре і змінюю
+- Top 5 Subcategories by Sales (Bar Chart)
 
-***ЛИСТИ ДЛЯ ДРУГОГО ДАШБОРТУ (Geographic Sales Analysis)***
+- Units Sold vs. Profitability (Scatter Plot)
 
-1. **Лист 1 (Sales Map by State (теплова карта прибутку))**
+## **Key Takeaways from the Project 🚀:**
+- Successfully cleaned and transformed raw sales data using Python and PostgreSQL before visualization in Tableau.
 
-*Тут помітила, що у вихідних даних місто Hyderabad відноситься не до того штату, тому повертаюсь в постгре і змінюю
+- Used Python for initial data preprocessing, handling missing values, and correcting data inconsistencies.
 
-1. **Лист 2 ТОП-10 штатів за к-тю замовлень (горизонтальні стовпчасті діаграми).**
-2. **Лист 3 ТОП-10 міст за к-тю замовлень (горизонтальні стовпчасті діаграми).**
+- Applied PostgreSQL for data transformation, merging tables, and calculating key financial metrics.
 
-*Тут було складно налаштувати всі інтерактиви, тому використала параметр - розрахункове поле ранк, а ще акшнс в дашборді.
+- Integrated calculated fields and interactivity in Tableau to enhance data exploration.
 
-***ЛИСТИ ДЛЯ ТРЕТЬОГО ДАШБОРДУ (Product Analysis)***
+- Built a structured sales analysis, covering revenue trends, geographic performance, and product-level insights.
 
-1. **Лист 1 Частка категорій у загальному прибутку (кругова діаграма).**
-2. **Лист 2 ТОП-5 підкатегорій за продажами (бар-чарт).**
-3. **Лист 3 Кількість проданих одиниць vs. прибуток (Scatter plot).**
-
-Готовий дашборд: https://public.tableau.com/app/profile/yevheniia.nechai/viz/IndianSalesAnalysis/Salesandprofitabilityanalysis?publish=yes
+This project showcases my ability to clean, transform, and analyze data using Python, PostgreSQL, and Tableau, enabling data-driven decision-making.
