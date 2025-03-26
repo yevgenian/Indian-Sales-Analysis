@@ -185,8 +185,6 @@ After preparing the data, I connected orders and sales_target tables to Tableau 
 
 This dashboard provides key business metrics and financial insights.
 
-![image](https://github.com/user-attachments/assets/b6b7b279-4f51-4f38-9d82-a56531e5bcc4)
-
 Sheets:
 - Key Performance Indicators (KPIs):
   - Total Revenue: SUM([subcat_revenue])
@@ -196,9 +194,10 @@ Sheets:
   - Total Number of Orders: COUNTD([order_id])
   - Unique Customers: COUNTD([customer_name])
 - Revenue Trend by Month (Line Chart):
-
 - Profit Trend by Month (Bar Chart):
 - Sales Map by State (Profit Heatmap):
+
+![image](https://github.com/user-attachments/assets/b6b7b279-4f51-4f38-9d82-a56531e5bcc4)
 
 ***Dashboard 2: Geographic Sales Analysis***
 
@@ -207,27 +206,24 @@ This dashboard focuses on sales distribution across different states and cities.
 There I implemented ranking calculations using Calculated Fields and Parameter.
 Used Dashboard Actions to enhance interactivity.
 
-![image](https://github.com/user-attachments/assets/d245b1cb-f8bf-46db-9a69-fadc6dc0da5e)
-
 Sheets:
 - Sales Map by State (Profit Heatmap)
-
 - Top 10 States by Order Volume (Horizontal Bar Chart)
-
 - Top 10 Cities by Order Volume (Horizontal Bar Chart)
+
+![image](https://github.com/user-attachments/assets/d245b1cb-f8bf-46db-9a69-fadc6dc0da5e)
 
 ***Dashboard 3: Product Analysis***
 
 This dashboard analyzes sales and profitability at the category and sub-category levels.
 
-![image](https://github.com/user-attachments/assets/35f23efd-3912-45e3-868d-695c48312904)
-
 Sheets:
 - Category Share in Total Profit (Pie Chart)
-
 - Top 5 Subcategories by Sales (Bar Chart)
-
 - Units Sold vs. Profitability (Scatter Plot)
+
+![image](https://github.com/user-attachments/assets/35f23efd-3912-45e3-868d-695c48312904)
+
 
 ## **Key Takeaways from the Project 🚀:**
 - Successfully cleaned and transformed raw sales data using Python and PostgreSQL before visualization in Tableau.
